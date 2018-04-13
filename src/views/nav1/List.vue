@@ -24,35 +24,6 @@
       </el-form-item>
     </el-form>
     <el-button class="searchButton" type="primary" @click="onSearch">搜索</el-button>
-    <el-table
-      :data="tableData"
-      stripe
-      border
-      highlight-current-row
-    >
-      <el-table-column
-        fixed
-        prop="name"
-        label="活动名称">
-      </el-table-column>
-      <el-table-column
-        fixed
-        prop="name"
-        label="活动名称">
-      </el-table-column>
-      <el-table-column
-        fixed
-        prop="name"
-        label="活动名称">
-      </el-table-column>
-      <el-table-column
-        fixed
-        prop="name"
-        label="活动名称">
-      </el-table-column>
-
-
-    </el-table>
   </div>
 </template>
 

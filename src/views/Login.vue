@@ -1,11 +1,11 @@
 <template>
-  <el-form ref='form' :model="form" status-icon  class="loginContainer">
+  <el-form ref='form' :model="form" :rules="rules" status-icon  class="loginContainer">
     <h3 class="title">系统登录</h3>
-    <el-form-item :rules="rules">
-      <el-input v-model="form.userName" auto-complete="on" prop="userName" placeholder="请输入用户名"></el-input>
+    <el-form-item prop="userName">
+      <el-input v-model="form.userName" auto-complete="on"  placeholder="请输入用户名"></el-input>
     </el-form-item>
-    <el-form-item>
-      <el-input type="password" v-model="form.password" prop="password" placeholder="请输入密码"></el-input>
+    <el-form-item prop="password">
+      <el-input type="password" v-model="form.password"  placeholder="请输入密码"></el-input>
     </el-form-item>
     <el-checkbox v-model="checked" class="rememberpsw">记住密码</el-checkbox>
     <el-form-item>
@@ -23,15 +23,22 @@ export default({
         password: ''
       },
       checked: true,
-      rules: [
-        {required: true, message: '年龄不能为空'},
-        {type: 'number', message: '年龄必须为数字值'}
-      ]
+      rules: {
+        userName: [
+          {required: true, trigger: 'blur'},
+          {}
+        ],
+        password: [
+          {required: true, trigger: 'blur'},
+          { min: 6, message: '密码长度在至少6个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
     onSubmit: function () {
-      console.log(this.form)
+      sessionStorage.setItem('userInfo', JSON.stringify({userName: this.form.userName}))
+      this.$router.push('/')
     }
   }
 })

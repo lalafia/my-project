@@ -6,9 +6,8 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import './element-variables.scss'
-import pagodaErpComponents from 'pagoda-ui/erp-components'
 import './style/base/_reset.scss'
-Vue.use(pagodaErpComponents)
+
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 

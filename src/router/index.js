@@ -35,11 +35,6 @@ export default new Router({
       component: Home,
       iconCls: 'el-icon-star-off',
       children: [
-        {
-          path: '/list',
-          name: 'List',
-          component: List
-        }
       ]
     },
 

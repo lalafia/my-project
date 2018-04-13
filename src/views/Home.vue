@@ -31,7 +31,7 @@
               <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-          <span v-else class="userinfo-inner">登录</span>
+          <span v-else class="userinfo-inner" @click="login">登录</span>
         </el-col>
       </el-header>
       <el-main class="main">
@@ -57,8 +57,14 @@ export default({
   },
   methods: {
     logout () {
-      this.$router.push('/login')
+      console.log(123)
       window.sessionStorage.removeItem('userInfo')
+      this.loginState = false
+      console.log(123)
+    },
+
+    login () {
+      this.$router.push('/login')
     },
 
     handleOpen () {
@@ -107,6 +113,7 @@ export default({
       color: #fff;
       .userinfo-inner {
         color: #fff;
+        cursor: pointer;
       }
     }
   }
