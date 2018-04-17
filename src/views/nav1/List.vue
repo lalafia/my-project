@@ -1,6 +1,6 @@
 <template>
   <div class="list-container">
-    <el-form :model="form" label-position="left"  label-width="50px" class='formcss' ref="form" inline>
+    <el-form :model="form" label-position="left"  :label-width="formLabelWidth" class='formcss' ref="form" inline>
       <el-form-item label="姓名">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
@@ -71,6 +71,43 @@
       :total="totalSize"
       class="pagination">
     </el-pagination>
+    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
+      <el-form :model="dialogForm" :label-width="formLabelWidth">
+        <el-form-item label="姓名">
+          <el-input v-model="dialogForm.name" auto-complete="off" placeholder="请填写姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="年龄">
+          <el-input v-model="dialogForm.age" placeholder="请填写年龄"></el-input>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-select v-model="dialogForm.gender" placeholder="请选择性别">
+            <el-option label="男" value="1"></el-option>
+            <el-option label="女" value="0"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="地址">
+          <el-cascader
+            :options="addrOptions"
+            v-model="dialogForm.addr"
+            @change="addrChange"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="出生日期">
+          <el-date-picker
+            v-model="dialogForm.birth"
+            type="date"
+            placeholder="请选择出生日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -83,11 +120,14 @@ export default {
       form: {
         name: ''
       },
+      formLabelWidth: '50px',
       tableData: [],
       currentPage: 1,
       pageSize: 10,
       pageNo: 1,
-      loading: false
+      loading: false,
+      dialogTitle: '',
+      dialogFormVisible: false
     }
   },
   methods: {
