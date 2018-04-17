@@ -1,6 +1,6 @@
 <template>
   <div class="list-container">
-    <el-form :model="form" label-position="left"  :label-width="formLabelWidth" class='formcss' ref="form" inline>
+    <el-form :model="form" label-position="left"  label-width="50px" class='formcss' ref="form" inline>
       <el-form-item label="姓名">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
@@ -39,7 +39,7 @@
         width="200">
       </el-table-column>
       <el-table-column
-        prop="gender"
+        prop="format(gender)"
         label="性别"
         width="100">
       </el-table-column>
@@ -49,8 +49,7 @@
       </el-table-column>
       <el-table-column
         fixed="right"
-        label="操作"
-        width="300">
+        label="操作">
         <template slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="primary" size="small">编辑</el-button>
           <el-button @click="handleDelete(scope.row)" type="warning" size="small">删除</el-button>
@@ -104,7 +103,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button v-loading="dialogLoading" type="primary" @click="addUser">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -112,7 +111,7 @@
 </template>
 
 <script>
-import { getListByPage } from '@/api/api'
+import { getListByPage, addUsers } from '@/api/api'
 
 export default {
   data () {
@@ -120,12 +119,77 @@ export default {
       form: {
         name: ''
       },
-      formLabelWidth: '50px',
+      formLabelWidth: '100px',
       tableData: [],
       currentPage: 1,
       pageSize: 10,
       pageNo: 1,
+      totalSize: 0,
       loading: false,
+      dialogLoading: false,
+      dialogForm: {
+        name: '',
+        age: '',
+        gender: '',
+        birth: '',
+        addr: ''
+      },
+      addrOptions: [
+        {
+          value: '湖南省',
+          label: '湖南省',
+          children: [
+            {
+              value: '长沙市',
+              label: '长沙市',
+              children: [
+                {
+                  value: '雨花区',
+                  label: '雨花区'
+                },
+                {
+                  value: '芙蓉区',
+                  label: '芙蓉区'
+                },
+                {
+                  value: '天心区',
+                  label: '天心区'
+                },
+                {
+                  value: '望城区',
+                  label: '望城区'
+                },
+                {
+                  value: '开福区',
+                  label: '开福区'
+                }
+              ]
+            },
+            {
+              value: '岳阳市',
+              label: '岳阳市',
+              children: [
+                {
+                  value: '云梦区',
+                  label: '云梦区'
+                },
+                {
+                  value: '岳楼区',
+                  label: '岳楼区'
+                },
+                {
+                  value: '荣湾区',
+                  label: '荣湾区'
+                },
+                {
+                  value: '天河区',
+                  label: '天河区'
+                }
+              ]
+            }
+          ]
+        }
+      ],
       dialogTitle: '',
       dialogFormVisible: false
     }
@@ -139,14 +203,13 @@ export default {
       }
       this.loading = true
       getListByPage(para).then((res) => {
-        console.log(res)
         this.tableData = res.data.users
         this.totalSize = res.data.totalSize
         this.loading = false
       })
     },
     onAdd () {
-      console.log(2)
+      this.dialogFormVisible = true
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
@@ -158,6 +221,24 @@ export default {
     handleCurrentChange (val) {
       this.currentPage = val
       this.onSearch()
+    },
+    addUser () {
+      this.dialogLoading = true
+      let para = {
+        ...this.dialogForm,
+        pageNo: this.pageNo,
+        pageSize: this.pageSize
+      }
+      addUsers(para).then(res => {
+        console.log(res.data.users[0])
+        this.tableData = res.data.users
+        this.totalSize = res.data.totalSize
+        this.dialogLoading = false
+        this.dialogFormVisible = false
+      })
+    },
+    addrChange () {
+      console.log(1)
     }
   },
   mounted () {
@@ -169,6 +250,7 @@ export default {
 <style>
   .list-container {
     padding: 20px;
+    position: relative;
   }
   .formcss {
     padding: 10px;

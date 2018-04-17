@@ -12,18 +12,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: '表单整理',
+      name: '用户列表',
       component: Home,
       iconCls: 'el-icon-document',
       children: [
         {
           path: '/list',
-          name: 'List',
+          name: 'UserList',
           component: List
         },
         {
           path: '/addItem',
-          name: 'AddItem',
+          name: 'AddUsers',
           component: AddItem
         }
       ]

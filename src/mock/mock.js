@@ -43,5 +43,21 @@ export default {
         }, 1000)
       })
     })
+    // 新增用户
+    mock.onGet('/user/addUsers').reply(config => {
+      let {pageNo, pageSize} = config.params
+      let mockUsers = users
+      mockUsers.unshift(config.params)
+      let totalSize = mockUsers.length
+      mockUsers = mockUsers.filter((u, index) => index < pageSize * pageNo && index >= pageSize * (pageNo - 1))
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            totalSize: totalSize,
+            users: mockUsers
+          }])
+        }, 1000)
+      })
+    })
   }
 }
