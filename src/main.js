@@ -7,7 +7,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import './element-variables.scss'
 import './style/base/_reset.scss'
+import Mock from './mock'
 
+Mock.init()
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 
