@@ -16,7 +16,7 @@
             <template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
             <el-menu-item v-for="child in item.children" :index="child.path" :key="child.path" v-if="!child.hidden"><i :class="child.iconCls"></i>{{child.name}}</el-menu-item>
           </el-submenu>
-          <el-menu-item v-else :key='index' :index="item.path">{{item.name}}</el-menu-item>
+          <el-menu-item v-else :key='index' :index="item.path"><i :class="item.iconCls"></i>{{item.name}}</el-menu-item>
         </template>
       </el-menu>
     </el-aside>

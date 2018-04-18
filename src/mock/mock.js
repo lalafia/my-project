@@ -45,16 +45,73 @@ export default {
     })
     // 新增用户
     mock.onGet('/user/addUsers').reply(config => {
-      let {pageNo, pageSize} = config.params
+      let pageNo = 1
+      let pageSize = 10
+      let { user } = config.params
       let mockUsers = users
-      mockUsers.unshift(config.params)
+      mockUsers.unshift(user)
       let totalSize = mockUsers.length
       mockUsers = mockUsers.filter((u, index) => index < pageSize * pageNo && index >= pageSize * (pageNo - 1))
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve([200, {
             totalSize: totalSize,
-            users: mockUsers
+            users: mockUsers,
+            code: 200,
+            msg: '新增用户成功'
+          }])
+        }, 1000)
+      })
+    })
+    // 修改用户
+    mock.onGet('/user/editUsers').reply(config => {
+      let pageNo = 1
+      let pageSize = 10
+      let { user, id } = config.params
+      users.some(item => {
+        if (item.id === id) {
+          item.name = user.name
+          item.age = user.age
+          item.gender = user.gender
+          item.addr = user.addr
+          item.birth = user.birth
+          return true
+        }
+      })
+      let totalSize = users.length
+      let mockUsers = users.filter((u, index) => index < pageSize * pageNo && index >= pageSize * (pageNo - 1))
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            totalSize: totalSize,
+            users: mockUsers,
+            code: 200,
+            msg: '编辑用户成功'
+          }])
+        }, 1000)
+      })
+    })
+    // 删除用户
+    mock.onGet('/user/deleteUsers').reply(config => {
+      let pageNo = 1
+      let pageSize = 10
+      let { id } = config.params
+      id.map(i => {
+        for (let j = 0; j < users.length; j++) {
+          if (i === users[j].id) {
+            users.splice(j, 1)
+          }
+        }
+      })
+      let totalSize = users.length
+      let mockUsers = users.filter((u, index) => index < pageSize * pageNo && index >= pageSize * (pageNo - 1))
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            totalSize: totalSize,
+            users: mockUsers,
+            code: 200,
+            msg: '删除用户成功'
           }])
         }, 1000)
       })

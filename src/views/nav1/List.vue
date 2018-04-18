@@ -2,7 +2,7 @@
   <div class="list-container">
     <el-form :model="form" label-position="left"  label-width="50px" class='formcss' ref="form" inline>
       <el-form-item label="姓名">
-        <el-input v-model="form.name"></el-input>
+        <el-input v-model.trim="form.name" @keyup.enter.native="onSearch" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button  type="primary" @click="onSearch">搜索</el-button>
@@ -31,7 +31,8 @@
       <el-table-column
         prop="age"
         label="年龄"
-        width="100">
+        width="100"
+        sortable>
       </el-table-column>
       <el-table-column
         prop="birth"
@@ -39,9 +40,11 @@
         width="200">
       </el-table-column>
       <el-table-column
-        prop="format(gender)"
+        prop="gender"
         label="性别"
-        width="100">
+        :formatter="formatGender"
+        width="100"
+        sortable>
       </el-table-column>
       <el-table-column
         prop="addr"
@@ -51,14 +54,14 @@
         fixed="right"
         label="操作">
         <template slot-scope="scope">
-          <el-button @click="handleEdit(scope.row)" type="primary" size="small">编辑</el-button>
-          <el-button @click="handleDelete(scope.row)" type="warning" size="small">删除</el-button>
+          <el-button @click="editTips(scope.row)" type="primary" size="small">编辑</el-button>
+          <el-button @click="deleteTips(scope.row)" type="warning" size="small">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <div style="margin-top: 20px">
-      <el-button @click="console.log(123)">删除选中</el-button>
-      <el-button @click="console.log(123)">取消</el-button>
+      <el-button type='warning' @click="batchDelete">批量删除</el-button>
+      <el-button @click="sels=[]">取消</el-button>
     </div>
     <el-pagination
       @size-change="handleSizeChange"
@@ -71,27 +74,23 @@
       class="pagination">
     </el-pagination>
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-      <el-form :model="dialogForm" :label-width="formLabelWidth">
-        <el-form-item label="姓名">
-          <el-input v-model="dialogForm.name" auto-complete="off" placeholder="请填写姓名"></el-input>
+      <el-form :model="dialogForm" :label-width="formLabelWidth" :rules="rules">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model.trim="dialogForm.name" auto-complete="off" placeholder="请填写姓名"></el-input>
         </el-form-item>
-        <el-form-item label="年龄">
-          <el-input v-model="dialogForm.age" placeholder="请填写年龄"></el-input>
+        <el-form-item label="年龄" prop="age">
+          <el-input v-model.number="dialogForm.age" placeholder="请填写年龄"></el-input>
         </el-form-item>
-        <el-form-item label="性别">
+        <el-form-item label="性别" prop="gender">
           <el-select v-model="dialogForm.gender" placeholder="请选择性别">
-            <el-option label="男" value="1"></el-option>
-            <el-option label="女" value="0"></el-option>
+            <el-option label="男" :value="1"></el-option>
+            <el-option label="女" :value="0"></el-option>
             </el-select>
         </el-form-item>
-        <el-form-item label="地址">
-          <el-cascader
-            :options="addrOptions"
-            v-model="dialogForm.addr"
-            @change="addrChange"
-          ></el-cascader>
+        <el-form-item label="地址" prop="addr">
+          <el-input v-model.trim="dialogForm.addr" placeholder="请填写地址"></el-input>
         </el-form-item>
-        <el-form-item label="出生日期">
+        <el-form-item label="出生日期" prop="birth">
           <el-date-picker
             v-model="dialogForm.birth"
             type="date"
@@ -103,15 +102,24 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button v-loading="dialogLoading" type="primary" @click="addUser">确 定</el-button>
+        <el-button v-loading="dialogLoading" type="primary" @click="submitDialog">确 定</el-button>
       </div>
     </el-dialog>
-
+    <el-dialog
+      title="删除提示"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <span>确定删除用户信息？</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="deleteUser" v-loading="dialogLoading">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getListByPage, addUsers } from '@/api/api'
+import { getListByPage, addUsers, editUsers, deleteUsers } from '@/api/api'
 
 export default {
   data () {
@@ -129,69 +137,38 @@ export default {
       dialogLoading: false,
       dialogForm: {
         name: '',
-        age: '',
+        age: 0,
         gender: '',
         birth: '',
         addr: ''
       },
-      addrOptions: [
-        {
-          value: '湖南省',
-          label: '湖南省',
-          children: [
-            {
-              value: '长沙市',
-              label: '长沙市',
-              children: [
-                {
-                  value: '雨花区',
-                  label: '雨花区'
-                },
-                {
-                  value: '芙蓉区',
-                  label: '芙蓉区'
-                },
-                {
-                  value: '天心区',
-                  label: '天心区'
-                },
-                {
-                  value: '望城区',
-                  label: '望城区'
-                },
-                {
-                  value: '开福区',
-                  label: '开福区'
-                }
-              ]
-            },
-            {
-              value: '岳阳市',
-              label: '岳阳市',
-              children: [
-                {
-                  value: '云梦区',
-                  label: '云梦区'
-                },
-                {
-                  value: '岳楼区',
-                  label: '岳楼区'
-                },
-                {
-                  value: '荣湾区',
-                  label: '荣湾区'
-                },
-                {
-                  value: '天河区',
-                  label: '天河区'
-                }
-              ]
-            }
-          ]
-        }
-      ],
       dialogTitle: '',
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      dialogVisible: false,
+      sels: [],
+      submitDialog: {},
+      currentRow: {},
+      currentRowId: '',
+      batch: false,
+      rules: {
+        name: [
+          {required: true, message: '请填写姓名', trigger: 'blur'},
+          { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+        ],
+        age: [
+          {required: true, message: '请填写年龄', trigger: 'blur'},
+          {type: 'number', message: '年龄必须为数字值', trigger: 'blur'}
+        ],
+        gender: [
+          {required: true, message: '请选择性别', trigger: 'blur'}
+        ],
+        addr: [
+          {required: true, message: '请填写地址', trigger: 'blur'}
+        ],
+        birth: [
+          { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+        ]
+      }
     }
   },
   methods: {
@@ -209,10 +186,19 @@ export default {
       })
     },
     onAdd () {
+      this.dialogForm = {
+        name: '',
+        age: '',
+        gender: '',
+        birth: '',
+        addr: ''
+      }
+      this.dialogTitle = '新增用户信息'
       this.dialogFormVisible = true
+      this.submitDialog = this.addUser
     },
     handleSelectionChange (val) {
-      this.multipleSelection = val
+      this.sels = val
     },
     handleSizeChange (val) {
       this.pageSize = val
@@ -220,14 +206,14 @@ export default {
     },
     handleCurrentChange (val) {
       this.currentPage = val
+      this.pageNo = val
       this.onSearch()
     },
     addUser () {
       this.dialogLoading = true
+      this.dialogForm.gender = Number(this.dialogForm.gender)
       let para = {
-        ...this.dialogForm,
-        pageNo: this.pageNo,
-        pageSize: this.pageSize
+        user: this.dialogForm
       }
       addUsers(para).then(res => {
         console.log(res.data.users[0])
@@ -237,8 +223,58 @@ export default {
         this.dialogFormVisible = false
       })
     },
-    addrChange () {
-      console.log(1)
+    editUser () {
+      this.dialogLoading = true
+      let para = {
+        id: this.currentRow.id,
+        user: this.dialogForm
+      }
+      editUsers(para).then(res => {
+        this.tableData = res.data.users
+        this.totalSize = res.data.totalSize
+        this.dialogLoading = false
+        this.dialogFormVisible = false
+      })
+    },
+    deleteUser () {
+      this.dialogLoading = true
+      let para
+      if (!this.batch) {
+        para = { id: [this.currentRowId] }
+      } else {
+        let ids = []
+        this.sels.map(sel => {
+          ids.push(sel.id)
+        })
+        para = {id: ids}
+      }
+
+      deleteUsers(para).then(res => {
+        this.tableData = res.data.users
+        this.totalSize = res.data.totalSize
+        this.dialogLoading = false
+        this.dialogVisible = false
+        this.batch = false
+      })
+    },
+    formatGender (row) {
+      let g = Number(row.gender)
+      return g === 1 ? '男' : g === 0 ? '女' : '未知'
+    },
+    batchDelete () {
+      this.dialogVisible = true
+      this.batch = true
+    },
+    editTips (row) {
+      this.dialogTitle = '编辑用户信息'
+      this.dialogForm = row
+      this.currentRow = row
+      this.dialogFormVisible = true
+      this.submitDialog = this.editUser
+    },
+    deleteTips (row) {
+      this.currentRowId = row.id
+      this.dialogVisible = true
     }
   },
   mounted () {

@@ -5,6 +5,7 @@ import NotFound from '@/views/404'
 import Login from '@/views/Login'
 import List from '@/views/nav1/List'
 import AddItem from '@/views/nav1/addItem'
+import PicAnalysis from '@/views/nav2/picAnalysis'
 
 Vue.use(Router)
 
@@ -18,12 +19,12 @@ export default new Router({
       children: [
         {
           path: '/list',
-          name: 'UserList',
+          name: '用户信息',
           component: List
         },
         {
           path: '/addItem',
-          name: 'AddUsers',
+          name: '添加活动',
           component: AddItem
         }
       ]
@@ -33,8 +34,13 @@ export default new Router({
       path: '/',
       name: '图形分析',
       component: Home,
-      iconCls: 'el-icon-star-off',
+      iconCls: 'el-icon-picture',
       children: [
+        {
+          path: '/picAnalysis',
+          name: '图表',
+          component: PicAnalysis
+        }
       ]
     },
 
