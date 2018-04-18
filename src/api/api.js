@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-let base = ''
+let base = 'https://lalafia.github.io/vue-element-demo'
 
 export const getList = params => { return axios.get(`${base}/user/list`, { params: params }) }
 export const getListByPage = params => { return axios.get(`${base}/user/listByPage`, { params: params }) }

@@ -6,7 +6,7 @@ export default {
   init () {
     let mock = new MockAdapter(axios)
     // 获取用户列表
-    mock.onGet('/user/list').reply(config => {
+    mock.onGet('https://lalafia.github.io/vue-element-demo/user/list').reply(config => {
       console.log(config)
       let { name } = config.params
       let mockUsers
@@ -24,7 +24,7 @@ export default {
       })
     })
     // 获取分页列表
-    mock.onGet('/user/listByPage').reply(config => {
+    mock.onGet('https://lalafia.github.io/vue-element-demo/user/listByPage').reply(config => {
       let {pageNo, pageSize, name} = config.params
       let mockUsers
       if (name) {
@@ -44,7 +44,7 @@ export default {
       })
     })
     // 新增用户
-    mock.onGet('/user/addUsers').reply(config => {
+    mock.onGet('https://lalafia.github.io/vue-element-demo/user/addUsers').reply(config => {
       let pageNo = 1
       let pageSize = 10
       let { user } = config.params
@@ -64,7 +64,7 @@ export default {
       })
     })
     // 修改用户
-    mock.onGet('/user/editUsers').reply(config => {
+    mock.onGet('https://lalafia.github.io/vue-element-demo/user/editUsers').reply(config => {
       let pageNo = 1
       let pageSize = 10
       let { user, id } = config.params
@@ -92,7 +92,7 @@ export default {
       })
     })
     // 删除用户
-    mock.onGet('/user/deleteUsers').reply(config => {
+    mock.onGet('https://lalafia.github.io/vue-element-demo/user/deleteUsers').reply(config => {
       let pageNo = 1
       let pageSize = 10
       let { id } = config.params
